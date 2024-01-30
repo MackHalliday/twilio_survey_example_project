@@ -17,7 +17,7 @@ class TwilioWebhook(APIView):
     def post(self, request, *args, **kwargs):
         try:
             twilio_data = parse_qs(request.body.decode("utf-8"))
-            print(twilio_data)
+
             incoming_msg_list = twilio_data.get("Body", [])
             incoming_msg = " ".join(incoming_msg_list)
 
