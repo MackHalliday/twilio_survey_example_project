@@ -11,8 +11,9 @@ Small application using Django and Twilio to create an app that can conduct surv
 - ✅ **V3**: Can Send Message - Create Twilio service to send message
 - ✅ **V4**: Iterate Twilio Service to Send Survey - Update Twilio services to send survey, waiting for response before sending the next questions.
 - ✅ **V5**: Save Survey Responses - Properly save survey responses
-- 🔨 **V6**: Refactor and testing!
-- 🔨**V6**: Frontend to Setup Basic Survey - Create Admin frontend to create surveys and send
+- 🔨 **V6**: Refactor and testing! [See WIP PR](https://github.com/MackHalliday/twilio_survey_example_project/pull/1)
+- **V7**: Survey campaigns - A group of users can be send a survey
+- **V6**: Frontend to Setup Basic Survey - Create Admin frontend to create surveys and send
 - **V7**: View Responses - Create Admin frontend to view survey response##
 
 ## Tech Overview 
