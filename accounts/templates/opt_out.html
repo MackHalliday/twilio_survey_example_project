@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Opt-Out from Twilio Service</title>
+</head>
+<body>
+    <h1>Opt-Out from Twilio Service</h1>
+    <p>If you no longer wish to receive messages from our Twilio service, please enter your phone number below:</p>
+    
+    <form action="{% url 'opt-out' %}">
+        {% csrf_token %}
+        <label for="phone_number">Phone Number:</label>
+        <input type="text" id="phone_number" name="phone_number" required>
+        <button type="submit">Opt-Out</button>
+    </form>
+</body>
+</html>
