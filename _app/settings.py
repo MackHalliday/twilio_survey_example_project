@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 import os
 from pathlib import Path
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -29,13 +30,13 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [os.environ.get("NGROK_HOST"), 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = [os.environ.get("NGROK_HOST"), "localhost", "127.0.0.1"]
 
 ngrok_site = f"https://{os.environ.get('NGROK_HOST')}"
 
 CORS_ALLOWED_ORIGINS = [ngrok_site]
 
-CSRF_TRUSTED_ORIGINS=[ngrok_site]
+CSRF_TRUSTED_ORIGINS = [ngrok_site]
 
 # Application definition
 
@@ -47,12 +48,11 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
-    "channels", 
-    "user_profiles",
+    "channels",
+    "accounts",
     "surveys",
-    "twilio_service", 
-    "phonenumber_field", 
-  
+    "twilio_service",
+    "phonenumber_field",
 ]
 
 MIDDLEWARE = [
@@ -86,7 +86,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "_app.wsgi.application"
 
-ASGI_APPLICATION = '_app.asgi.application'
+ASGI_APPLICATION = "_app.asgi.application"
+
+SESSION_ENGINE = "django.contrib.sessions.backends.db"
 
 
 # Database
