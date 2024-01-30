@@ -6,8 +6,8 @@ from django.http import HttpResponse, JsonResponse
 from rest_framework import status
 from rest_framework.views import APIView
 from twilio.twiml.messaging_response import MessagingResponse
-from accounts.models import UserProfile
 
+from accounts.models import UserProfile
 from surveys.models import Question, SurveyUser, UserResponse
 from twilio_service.constant import (SURVEY__COMPLETE, SURVEY__NO_SURVEY_SENT,
                                      SURVEY__START)
@@ -27,7 +27,7 @@ class TwilioWebhook(APIView):
             survey_step = request.session.get("survey_step", -1)
             answers = request.session.get("answers", [])
 
-            questions = Question.objects.filter(survey_id=1).order_by('order')
+            questions = Question.objects.filter(survey_id=1).order_by("order")
 
             if survey_step == -1:
                 response = SURVEY__START
@@ -44,33 +44,36 @@ class TwilioWebhook(APIView):
                     )
                     request.session["survey_step"] += 1
 
-                    if survey_step > 0: 
-                        last_question = survey_step -  1
+                    if survey_step > 0:
+                        last_question = survey_step - 1
                         last_answered_question = questions[last_question]
 
                         user_profile = UserProfile.objects.filter(
-                            phone_number=phone_number, 
+                            phone_number=phone_number,
                         ).first()
 
                         UserResponse.objects.create(
-                            respondent=user_profile.user, question=last_answered_question, response=incoming_msg
+                            respondent=user_profile.user,
+                            question=last_answered_question,
+                            response=incoming_msg,
                         ).save()
-                    
-                    
+
                     if survey_step > 0:
                         answers.append(incoming_msg)
             else:
-                last_question = survey_step -  1
+                last_question = survey_step - 1
                 last_answered_question = questions[last_question]
 
                 user_profile = UserProfile.objects.filter(
-                    phone_number=phone_number, 
+                    phone_number=phone_number,
                 ).first()
 
                 UserResponse.objects.create(
-                    respondent=user_profile.user, question=last_answered_question, response=incoming_msg
+                    respondent=user_profile.user,
+                    question=last_answered_question,
+                    response=incoming_msg,
                 ).save()
-                    
+
                 response = SURVEY__COMPLETE
                 answers.append(incoming_msg)
                 del request.session["survey_step"]
