@@ -5,6 +5,8 @@ from rest_framework import status
 from django.http import JsonResponse
 import json
 from typing import Any
+from urllib.parse import parse_qs
+
 # from django.contrib.auth.models import User
 
 # from surveys.models import Question, UserResponse
@@ -12,8 +14,8 @@ from typing import Any
 class TwilioWebhook(APIView):
     def post(self, request: Any, *args: Any, **kwargs: Any) -> Any:
         try:
-            twilio_data = json.loads(request.body.decode("utf-8"))
-
+            twilio_data = parse_qs(request.body.decode("utf-8"))
+            
             phone_number = twilio_data.get("From")
             message_body = twilio_data.get("Body")
 
