@@ -19,8 +19,11 @@ Small application using Django and Twilio to create an app that can conduct surv
 - **Environment**: Virtual Env, DotEnv
 - **Typing**: Python Typing
 - **Message**: Twilio
+- **Misc**: Ngrok
 
 ## Resources Used 
-- **[Send Automated Surveys by SMS](https://www.twilio.com/en-us/blog/send-automated-surveys-sms-python-twilio)**: Example by Twilio
+- **[Ngrok - PIP Package Docs](https://pypi.org/project/ngrok/)** - Reverse proxy 
+- **[Ngrok - What is Ngrok](https://www.youtube.com/watch?v=UaxqJUXqvro&t=54s)** - Explainer video
+- **[Twilio - Send Automated Surveys by SMS](https://www.twilio.com/en-us/blog/send-automated-surveys-sms-python-twilio)**: Example by Twilio
 - **[Twilio-Python Github](https://github.com/twilio/twilio-python?tab=readme-ov-file)**: Github with Twilio-Python examples
 - **[Twilio-Python Python Library](https://twilio.com/docs/libraries/reference/twilio-python/)**: Docs for Twilio-Python library
