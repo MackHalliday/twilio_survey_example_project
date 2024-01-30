@@ -1,6 +1,6 @@
 from django.urls import path
-from . import views
+from .views import TwilioWebhook
 
 urlpatterns = [
-    path('sms/webhook/', views.sms_webhook, name='sms_webhook'),
+    path('incoming-message/', TwilioWebhook.as_view(), name='income-message'),
 ]
