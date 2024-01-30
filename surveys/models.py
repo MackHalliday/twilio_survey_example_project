@@ -3,6 +3,7 @@ from django.db import models
 
 
 class Survey(models.Model):
+    id = models.AutoField(primary_key=True)
     survey_name = models.TextField(null=True, blank=True)
     version = models.IntegerField(null=True, blank=True)
     description = models.TextField(null=True, blank=True)
@@ -10,6 +11,7 @@ class Survey(models.Model):
 
 
 class SurveyUser(models.Model):
+    id = models.AutoField(primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     survey = models.ForeignKey(Survey, on_delete=models.CASCADE)
     completed = models.BooleanField(default=False)
@@ -20,6 +22,7 @@ class SurveyUser(models.Model):
 
 
 class Question(models.Model):
+    id = models.AutoField(primary_key=True)
     survey = models.ForeignKey(
         Survey, related_name="questions", on_delete=models.CASCADE
     )
@@ -49,6 +52,7 @@ class Question(models.Model):
 
 
 class UserResponse(models.Model):
+    id = models.AutoField(primary_key=True)
     question = models.ForeignKey(
         Question, related_name="answers", on_delete=models.CASCADE
     )

@@ -4,6 +4,7 @@ from phonenumber_field.modelfields import PhoneNumberField
 
 
 class UserProfile(models.Model):
+    id = models.AutoField(primary_key=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     phone_number = PhoneNumberField(null=True, blank=True)
     location = models.CharField(max_length=100, null=True, blank=True)
