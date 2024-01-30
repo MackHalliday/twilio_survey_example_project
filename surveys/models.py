@@ -16,7 +16,7 @@ class Question(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def set_unique_order(self):
-        max_order = self.get_questions_for_survey_qs.aggregate(models.Max('order'))['order__max']
+        max_order = self.get_questions_by_survey_id_qs(self.survey_id).aggregate(models.Max('order'))['order__max']
         if max_order is None:
             self.order = 1
         else:
@@ -28,15 +28,15 @@ class Question(models.Model):
         super().save(*args, **kwargs)
 
     
-    def get_questions_for_survey_qs(self):
-        return Question.objects.filter(survey=self.survey)
-
+    def get_questions_by_survey_id_qs(self, survey_id):
+        return Question.objects.filter(survey=survey_id)
     
     class Meta:
         unique_together = ('survey', 'order')
 
-class Answer(models.Model):
+
+class UserResponse(models.Model):
     question = models.ForeignKey(Question, related_name='answers', on_delete=models.CASCADE)
     respondent = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    text = models.TextField(null=True,  blank=True)
+    response = models.TextField(null=True,  blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
