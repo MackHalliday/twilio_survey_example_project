@@ -9,6 +9,16 @@ class Survey(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 
+class SurveyUser(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    survey = models.ForeignKey(Survey, on_delete=models.CASCADE)
+    completed = models.BooleanField(default=False)
+    sent_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        unique_together = ("user", "survey")
+
+
 class Question(models.Model):
     survey = models.ForeignKey(
         Survey, related_name="questions", on_delete=models.CASCADE
