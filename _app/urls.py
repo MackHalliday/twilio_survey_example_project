@@ -16,9 +16,10 @@ Including another URLconf
 """
 # myproject/urls.py
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import include, path
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('twilio-service/api/', include('twilio_service.urls')),
+    path("admin/", admin.site.urls),
+    path("twilio-service/api/", include("twilio_service.urls")),
+    path("accounts/", include("accounts.urls")),
 ]
