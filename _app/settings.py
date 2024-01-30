@@ -88,7 +88,11 @@ WSGI_APPLICATION = "_app.wsgi.application"
 
 ASGI_APPLICATION = "_app.asgi.application"
 
+# Session Engine
 SESSION_ENGINE = "django.contrib.sessions.backends.db"
+SESSION_COOKIE_NAME = "my_session"
+SESSION_COOKIE_AGE = 3600
+SESSION_SAVE_EVERY_REQUEST = True
 
 
 # Database
