@@ -95,3 +95,6 @@ class TwilioWebhookTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn(SURVEY__COMPLETE, str(response.content))
         self.assertEqual(UserResponse.objects.count(), 1)
+
+    def test_user_opt_out(self): 
+        pass
