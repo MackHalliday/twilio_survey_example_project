@@ -49,9 +49,10 @@ class TwilioWebhookTestCase(TestCase):
         response = self.client.post(
             reverse("income-message"),
             data={
-                "Body": [SURVEY__USER_CONFIRM_SURVEY],
-                "From": [str(self.user_phone_number)],
+                "Body": SURVEY__USER_CONFIRM_SURVEY,
+                "From": str(self.user_phone_number),
             },
+            content_type="application/x-www-form-urlencoded",
         )
 
         self.assertEqual(response.status_code, 200)
@@ -65,7 +66,8 @@ class TwilioWebhookTestCase(TestCase):
 
         response = self.client.post(
             reverse("income-message"),
-            data={"Body": ["No"], "From": [str(self.user_phone_number)]},
+            data={"Body": "No", "From": str(self.user_phone_number)},
+            content_type="application/x-www-form-urlencoded",
         )
 
         self.assertEqual(response.status_code, 200)
@@ -82,9 +84,10 @@ class TwilioWebhookTestCase(TestCase):
         response = self.client.post(
             reverse("income-message"),
             data={
-                "Body": ["Last answer to question."],
-                "From": [str(self.user_phone_number)],
+                "Body": "Last answer to question.",
+                "From": str(self.user_phone_number),
             },
+            content_type="application/x-www-form-urlencoded",
         )
 
         self.assertEqual(response.status_code, 200)
