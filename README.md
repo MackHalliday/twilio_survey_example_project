@@ -20,10 +20,11 @@ Small application using Django and Twilio to create an app that can conduct surv
 ## Tech Overview 
 - **Frameworks**: Django, DjangoREST framework
 - **Database**: PostgreSQL
+- **Testing**: Unittest
 - **Environment**: Virtual Env, DotEnv
 - **Typing**: Python Typing
-- **Message**: Twilio
-- **Misc**: Ngrok
+- **Messaging**: Twilio
+- **Hosting**: Ngrok
 
 ## Resources Used 
 - **[Ngrok - PIP Package Docs](https://pypi.org/project/ngrok/)**:  Reverse proxy 
