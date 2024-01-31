@@ -7,4 +7,4 @@ SURVEY__CONFIRM_START = (
 )
 SURVEY__DO_NOT_SEND_SURVEY = "No survey will be sent."
 SURVEY__COMPLETE = "Thank you for completing the survey."
-SURVEY__OPT_OUT_MESSAGE = "You have been unsubscribed service."
+SURVEY__OPT_OUT_MESSAGE = "You have been unsubscribed this service."

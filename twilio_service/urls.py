@@ -1,7 +1,9 @@
 from django.urls import path
 
-from .views import TwilioWebhook
+from .webhook.views import TwilioWebhook
+from .websocket.consumers import TwilioConsumer
 
 urlpatterns = [
-    path("incoming-message/", TwilioWebhook.as_view(), name="income-message"),
+    path("webhook/survey/", TwilioWebhook.as_view(), name="webhook-survey"),
+    path("websocket/survey/", TwilioConsumer().as_asgi(), name="websocket-survey"),
 ]
