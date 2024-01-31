@@ -1,8 +1,9 @@
 from surveys.models import Question, SurveyUser, UserResponse
 from twilio_service.constant import (
-    SURVEY__COMPLETE,
-    SURVEY__CONFIRM_START,
-    SURVEY__DO_NOT_SEND_SURVEY,
+    SURVEY__COMPLETE_RESPONSE,
+    SURVEY__CONFIRM_DO_NOT_SEND_RESPONSE,
+    SURVEY__CONFIRM_START_RESPONSE,
+    SURVEY__NO_SURVEY_AVAILABLE_RESPONSE,
     SURVEY__USER_CONFIRM_SURVEY,
 )
 
@@ -10,41 +11,55 @@ from twilio_service.constant import (
 class GenerateSurveyResponse:
 
     def get_reponse(self, request, user, user_message):
-        survey_step = request.session.get("survey_step", None)
 
-        user_current_survey = SurveyUser.objects.filter(
-            user=user, completed=False
-        ).order_by("sent_at")[0]
-
-        questions = Question.objects.filter(survey_id=user_current_survey.id).order_by(
-            "order"
+        user_current_survey = (
+            SurveyUser.objects.filter(user=user, completed=False)
+            .order_by("sent_at")
+            .first()
         )
 
-        if survey_step is None:
-            response = SURVEY__CONFIRM_START
-            request.session["survey_step"] = 0
-
-        elif survey_step == 0 and user_message.lower() != SURVEY__USER_CONFIRM_SURVEY:
-            response = SURVEY__DO_NOT_SEND_SURVEY
-            del request.session["survey_step"]
+        if user_current_survey is None:
+            response = SURVEY__NO_SURVEY_AVAILABLE_RESPONSE
 
         else:
-            if survey_step > 0:
-                last_answered_question = questions[survey_step - 1]
-                UserResponse.objects.create(
-                    respondent=user,
-                    question=last_answered_question,
-                    response=user_message,
-                ).save()
+            survey_step = request.session.get("survey_step", None)
 
-            if survey_step < len(questions):
-                response = f"({survey_step + 1}/{len(questions)}) {questions[survey_step].text}"
-                request.session["survey_step"] += 1
+            if survey_step is None:
+                response = SURVEY__CONFIRM_START_RESPONSE
+                request.session["survey_step"] = 0
+
+            elif (
+                survey_step == 0 and user_message.lower() != SURVEY__USER_CONFIRM_SURVEY
+            ):
+                response = SURVEY__CONFIRM_DO_NOT_SEND_RESPONSE
+                del request.session["survey_step"]
 
             else:
-                user_current_survey.completed = True
-                user_current_survey.save()
-                response = SURVEY__COMPLETE
-                del request.session["survey_step"]
+                questions = Question.objects.filter(
+                    survey_id=user_current_survey.id
+                ).order_by("order")
+
+                total_questions = len(questions)
+
+                if survey_step > 0:
+                    last_answered_question = questions[survey_step - 1]
+
+                    UserResponse.objects.create(
+                        respondent=user,
+                        question=last_answered_question,
+                        response=user_message,
+                    ).save()
+
+                if survey_step < total_questions:
+                    next_question = questions[survey_step].text
+                    response = f"({survey_step + 1}/{total_questions}) {next_question}"
+
+                    request.session["survey_step"] += 1
+                else:
+                    user_current_survey.completed = True
+                    user_current_survey.save()
+
+                    response = SURVEY__COMPLETE_RESPONSE
+                    del request.session["survey_step"]
 
         return response
