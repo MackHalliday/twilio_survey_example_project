@@ -20,7 +20,7 @@ class TwilioWebhookTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create(username="testuser", password="testpassword")
         self.user_profile = UserProfile.objects.create(
-            user=self.user, phone_number="+13092125377"
+            user=self.user, phone_number="+123456789"
         )
         self.user_phone_number = self.user_profile.phone_number
 
@@ -40,6 +40,7 @@ class TwilioWebhookTestCase(TestCase):
         )
 
         self.client = Client()
+        self.content_type = "application/xml"
 
     def test_start_survey(self):
 
@@ -47,10 +48,12 @@ class TwilioWebhookTestCase(TestCase):
         session["survey_step"] = 1
         session.save()
 
+        xml = f"From=%2B123456789&Body={SURVEY__USER_CONFIRM_SURVEY}s"
+
         response = self.client.post(
             reverse("income-message"),
-            data='<?xml version="1.0" encoding="UTF-8"?><Response><Message from="+13092125377">This is a Twilio SMS response with From and Body attributes.</Message></Response>',
-            content_type="application/x-www-form-urlencoded",
+            data=xml,
+            content_type=self.content_type,
         )
 
         self.assertEqual(response.status_code, 200)
@@ -62,10 +65,12 @@ class TwilioWebhookTestCase(TestCase):
         session["survey_step"] = None
         session.save()
 
+        xml = "From=%2B123456789&Body=No"
+
         response = self.client.post(
             reverse("income-message"),
-            data={"Body": "No", "From": str(self.user_phone_number)},
-            content_type="application/x-www-form-urlencoded",
+            data=xml,
+            content_type=self.content_type,
         )
 
         self.assertEqual(response.status_code, 200)
@@ -79,13 +84,12 @@ class TwilioWebhookTestCase(TestCase):
         twilio_response = MessagingResponse()
         twilio_response.message("Survey complete.")
 
+        xml = "From=%2B123456789&Body=Response to last question asked."
+
         response = self.client.post(
             reverse("income-message"),
-            data={
-                "Body": "Last answer to question.",
-                "From": str(self.user_phone_number),
-            },
-            content_type="application/x-www-form-urlencoded",
+            data=xml,
+            content_type=self.content_type,
         )
 
         self.assertEqual(response.status_code, 200)
