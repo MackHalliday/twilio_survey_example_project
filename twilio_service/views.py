@@ -22,7 +22,6 @@ from twilio_service.constant import (
 class TwilioWebhook(APIView):
     def post(self, request, *args, **kwargs):
         try:
-            # Get phone number and message from twilio data
             twilio_data = parse_qs(request.body.decode("utf-8"))
 
             phone_number_list = twilio_data.get("From", [])
@@ -31,26 +30,25 @@ class TwilioWebhook(APIView):
             incoming_msg_list = twilio_data.get("Body", [])
             incoming_msg = " ".join(incoming_msg_list)
 
-            # Get user by phone number
-            user_profile = UserProfile.objects.filter(
-                phone_number=phone_number,
-            ).first()
+            print(UserProfile.objects.all()[0].phone_number)
+            print(phone_number)
 
-            # If 'opt-out' then do
+            user_profile = UserProfile.objects.get(phone_number=phone_number)
+
             if incoming_msg == TWILIO__OPT_OUT:
                 user_profile.update(active=False)
                 response = SURVEY__OPT_OUT_MESSAGE
                 del request.session["survey_step"]
 
-            # Else send survey
             else:
                 survey_step = request.session.get("survey_step", None)
 
                 user_current_survey = SurveyUser.objects.filter(
-                    user=user_profile.user, is_active=True
+                    user=user_profile.user, completed=False
                 ).order_by("sent_at")[0]
+
                 questions = Question.objects.filter(
-                    survey_id=user_current_survey
+                    survey_id=user_current_survey.id
                 ).order_by("order")
 
                 if not survey_step:
@@ -78,6 +76,8 @@ class TwilioWebhook(APIView):
                         request.session["survey_step"] += 1
 
                     else:
+                        user_current_survey.completed = True
+                        user_current_survey.save()
                         response = SURVEY__COMPLETE
                         del request.session["survey_step"]
 
