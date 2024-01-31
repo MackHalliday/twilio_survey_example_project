@@ -2,7 +2,7 @@
 
 🚧 MVP in Progress 🚧:
 
-Small application using Django and Twilio to create an app that can conduct surveys via Twilio. 
+Small application using Django and Twilio to conduct surveys.
 
 ## Milestones
 - ✅ **V0**: Basic Project Setup - Establish the foundational structure
