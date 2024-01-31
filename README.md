@@ -7,11 +7,11 @@ Small application using Django and Twilio to conduct surveys.
 ## Milestones
 - ✅ **V0**: Basic Project Setup - Establish the foundational structure
 - ✅ **V1**: Basic Models - Create basic database structure
-- ✅ **V2**: Can Receive Messages - Create Twilio service to receive message
-- ✅ **V3**: Can Send Message - Create Twilio service to send message
+- ✅ **V2**: Can Receive Messages - Create Twilio WebHook service to receive message
+- ✅ **V3**: Can Send Message - Create Twilio WebHook service to send message
 - ✅ **V4**: Iterate Twilio Service to Send Survey - Update Twilio services to send survey, waiting for response before sending the next questions.
 - ✅ **V5**: Save Survey Responses - Properly save survey responses
-- 🔨 **V6**: Setup AsyncWebsocket - See `/twilio_service/consumers.py`
+- 🔨 **V6**: Update to Websocket - See `/twilio_service/consumers.py`. Update Twilio Webhook service to use WebStocket.
 - **V7**: Opt-In Opt-Out Service - Move service into own class
 - **V8**: Setup Demo - Currently using ngrok, is there a better solution?
 - **V9**: Survey campaigns - A group of users can be send a survey
