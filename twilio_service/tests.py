@@ -12,6 +12,7 @@ from twilio_service.constant import (
     SURVEY__COMPLETE,
     SURVEY__DO_NOT_SEND_SURVEY,
     SURVEY__USER_CONFIRM_SURVEY,
+    TWILIO__OPT_OUT,
 )
 
 
@@ -45,10 +46,10 @@ class TwilioWebhookTestCase(TestCase):
     def test_start_survey(self):
 
         session = self.client.session
-        session["survey_step"] = 1
+        session["survey_step"] = 0
         session.save()
 
-        xml = f"From=%2B123456789&Body={SURVEY__USER_CONFIRM_SURVEY}s"
+        xml = f"From=%2B123456789&Body={SURVEY__USER_CONFIRM_SURVEY}"
 
         response = self.client.post(
             reverse("income-message"),
@@ -62,7 +63,7 @@ class TwilioWebhookTestCase(TestCase):
     def test_no_survey_sent(self):
 
         session = self.client.session
-        session["survey_step"] = None
+        session["survey_step"] = 0
         session.save()
 
         xml = "From=%2B123456789&Body=No"
@@ -74,11 +75,11 @@ class TwilioWebhookTestCase(TestCase):
         )
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(SURVEY__DO_NOT_SEND_SURVEY, str(response.content))
+        self.assertIn(SURVEY__DO_NOT_SEND_SURVEY, str(response.content))
 
     def test_survey_complete(self):
         session = self.client.session
-        session["survey_step"] = 4
+        session["survey_step"] = 3
         session.save()
 
         twilio_response = MessagingResponse()
@@ -96,5 +97,18 @@ class TwilioWebhookTestCase(TestCase):
         self.assertIn(SURVEY__COMPLETE, str(response.content))
         self.assertEqual(UserResponse.objects.count(), 1)
 
-    def test_user_opt_out(self): 
-        pass
+    def test_user_can_opt_out(self): 
+        session = self.client.session
+        session["survey_step"] = 0
+        session.save()
+
+        xml = "From=%2B123456789&Body=STOP"
+
+        response = self.client.post(
+            reverse("income-message"),
+            data=xml,
+            content_type=self.content_type,
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(TWILIO__OPT_OUT, str(response.content))
