@@ -1,7 +1,6 @@
 import traceback
 from urllib.parse import parse_qs
 
-from django.contrib.auth.models import User
 from django.http import HttpResponse, JsonResponse
 from rest_framework import status
 from rest_framework.views import APIView
@@ -26,8 +25,8 @@ class TwilioWebhook(APIView):
 
             phone_number_list = twilio_data.get("From", [])
             phone_number = " ".join(phone_number_list)
-            incoming_msg_list = twilio_data.get("Body", [])
 
+            incoming_msg_list = twilio_data.get("Body", [])
             incoming_msg = " ".join(incoming_msg_list)
 
             user_profile = UserProfile.objects.get(phone_number=phone_number)
