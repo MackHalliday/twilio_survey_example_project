@@ -47,8 +47,6 @@ class TwilioWebhook(APIView):
                     survey_id=user_current_survey.id
                 ).order_by("order")
 
-                print(questions[0])
-
                 if not survey_step:
                     response = SURVEY__CONFIRM_START
                     request.session["survey_step"] = 0
