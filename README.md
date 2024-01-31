@@ -12,10 +12,11 @@ Small application using Django and Twilio to conduct surveys.
 - ✅ **V4**: Iterate Twilio Service to Send Survey - Update Twilio services to send survey, waiting for response before sending the next questions.
 - ✅ **V5**: Save Survey Responses - Properly save survey responses
 - 🔨 **V6**: Refactor and write test
-- **V7**: Figure demo - currently using ngrok. Is there a better solution?
-- **V8**: Survey campaigns - A group of users can be send a survey
-- **V9**: Frontend to Setup Basic Survey - Create Admin frontend to create surveys and send
-- **V10**: View Responses - Create Admin frontend to view survey response##
+- **V7**: Setup actual AsyncWebsocket. See `/twilio_service/consumers.py`
+- **V8**: Figure out demo. Currently using ngrok, is there a better solution?
+- **V9**: Survey campaigns - A group of users can be send a survey
+- **V10**: Frontend to Setup Basic Survey - Create Admin frontend to create surveys and send
+- **V11**: View Responses - Create Admin frontend to view survey response##
 
 ## Tech Overview 
 - **Frameworks**: Django, DjangoREST framework
