@@ -31,8 +31,10 @@ class TwilioWebhook(APIView):
 
             user_profile = UserProfile.objects.get(phone_number=phone_number)
 
-            if incoming_msg == TWILIO__OPT_OUT:
-                user_profile.update(active=False)
+            if incoming_msg.lower() == TWILIO__OPT_OUT:
+                user_profile.active = False 
+                user_profile.save()
+
                 response = SURVEY__OPT_OUT_MESSAGE
                 del request.session["survey_step"]
 
@@ -47,7 +49,7 @@ class TwilioWebhook(APIView):
                     survey_id=user_current_survey.id
                 ).order_by("order")
 
-                if not survey_step:
+                if survey_step is None:
                     response = SURVEY__CONFIRM_START
                     request.session["survey_step"] = 0
 
@@ -67,7 +69,7 @@ class TwilioWebhook(APIView):
                             response=incoming_msg,
                         ).save()
 
-                    if survey_step <= len(questions):
+                    if survey_step < len(questions):
                         response = f"({survey_step + 1}/{len(questions)}) {questions[survey_step].text}"
                         request.session["survey_step"] += 1
 
