@@ -49,7 +49,7 @@ class TwilioWebhookTestCase(TestCase):
 
         response = self.client.post(
             reverse("income-message"),
-            data='<?xml version="1.0" encoding="UTF-8"?><Response><Body>Hello World</Body></Response>',
+            data='<?xml version="1.0" encoding="UTF-8"?><Response><Message from="+13092125377">This is a Twilio SMS response with From and Body attributes.</Message></Response>',
             content_type="application/x-www-form-urlencoded",
         )
 
