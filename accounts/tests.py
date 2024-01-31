@@ -1,10 +1,13 @@
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
-from django.urls import reverse
 
 from accounts.models import UserProfile
-from surveys.models import Question, Survey, SurveyUser
-from twilio_service.constant import TWILIO__OPT_OUT
+
+# from django.urls import reverse
+
+# from surveys.models import Question, Survey, SurveyUser
+# from twilio_service.constant import TWILIO__OPT_OUT
+
 
 class OptOutTestCase(TestCase):
 
