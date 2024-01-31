@@ -30,9 +30,9 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [os.environ.get("NGROK_HOST"), "localhost", "127.0.0.1"]
+ALLOWED_HOSTS = ["a287-96-239-116-96.ngrok-free.app", "localhost", "127.0.0.1"]
 
-ngrok_site = f"https://{os.environ.get('NGROK_HOST')}"
+ngrok_site = f"https://a287-96-239-116-96.ngrok-free.app"
 
 CORS_ALLOWED_ORIGINS = [ngrok_site]
 

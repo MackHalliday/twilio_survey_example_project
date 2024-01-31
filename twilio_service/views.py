@@ -30,9 +30,6 @@ class TwilioWebhook(APIView):
             incoming_msg_list = twilio_data.get("Body", [])
             incoming_msg = " ".join(incoming_msg_list)
 
-            print(UserProfile.objects.all()[0].phone_number)
-            print(phone_number)
-
             user_profile = UserProfile.objects.get(phone_number=phone_number)
 
             if incoming_msg == TWILIO__OPT_OUT:
