@@ -9,6 +9,7 @@ from twilio.twiml.messaging_response import MessagingResponse
 from accounts.models import UserProfile
 from surveys.models import Question, Survey, SurveyUser, UserResponse
 from twilio_service.constant import (
+    SURVEY__COMPLETE,
     SURVEY__DO_NOT_SEND_SURVEY,
     SURVEY__USER_CONFIRM_SURVEY,
 )
@@ -48,10 +49,7 @@ class TwilioWebhookTestCase(TestCase):
 
         response = self.client.post(
             reverse("income-message"),
-            data={
-                "Body": SURVEY__USER_CONFIRM_SURVEY,
-                "From": str(self.user_phone_number),
-            },
+            data='<?xml version="1.0" encoding="UTF-8"?><Response><Body>Hello World</Body></Response>',
             content_type="application/x-www-form-urlencoded",
         )
 
@@ -75,7 +73,7 @@ class TwilioWebhookTestCase(TestCase):
 
     def test_survey_complete(self):
         session = self.client.session
-        session["survey_step"] = 2
+        session["survey_step"] = 4
         session.save()
 
         twilio_response = MessagingResponse()
@@ -91,5 +89,5 @@ class TwilioWebhookTestCase(TestCase):
         )
 
         self.assertEqual(response.status_code, 200)
-        self.assertIn("Survey complete.", str(response.content))
+        self.assertIn(SURVEY__COMPLETE, str(response.content))
         self.assertEqual(UserResponse.objects.count(), 1)

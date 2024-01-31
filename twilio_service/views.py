@@ -22,9 +22,13 @@ from twilio_service.constant import (
 class TwilioWebhook(APIView):
     def post(self, request, *args, **kwargs):
         try:
-            phone_number =request.data.get('From', None)
+            twilio_data = parse_qs(request.body.decode("utf-8"))
 
-            incoming_msg = request.data.get('From', None)
+            phone_number_list = twilio_data.get("From", [])
+            phone_number = " ".join(phone_number_list)
+            incoming_msg_list = twilio_data.get("Body", [])
+
+            incoming_msg = " ".join(incoming_msg_list)
 
             user_profile = UserProfile.objects.get(phone_number=phone_number)
 
@@ -44,6 +48,8 @@ class TwilioWebhook(APIView):
                     survey_id=user_current_survey.id
                 ).order_by("order")
 
+                print(questions[0])
+
                 if not survey_step:
                     response = SURVEY__CONFIRM_START
                     request.session["survey_step"] = 0
@@ -56,16 +62,16 @@ class TwilioWebhook(APIView):
                     del request.session["survey_step"]
 
                 else:
-                    last_answered_question = questions[survey_step - 1]
+                    if survey_step > 0:
+                        last_answered_question = questions[survey_step - 1]
+                        UserResponse.objects.create(
+                            respondent=user_profile.user,
+                            question=last_answered_question,
+                            response=incoming_msg,
+                        ).save()
 
-                    UserResponse.objects.create(
-                        respondent=user_profile.user,
-                        question=last_answered_question,
-                        response=incoming_msg,
-                    ).save()
-
-                    if survey_step > len(questions):
-                        response = f"({survey_step + 1}/{len(questions)}) {questions[survey_step]}"
+                    if survey_step <= len(questions):
+                        response = f"({survey_step + 1}/{len(questions)}) {questions[survey_step].text}"
                         request.session["survey_step"] += 1
 
                     else:
