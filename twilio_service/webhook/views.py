@@ -8,10 +8,7 @@ from twilio.twiml.messaging_response import MessagingResponse
 
 from accounts.models import UserProfile
 from surveys.models import Question, SurveyUser, UserResponse
-from twilio_service.constant import (
-    SURVEY__OPT_OUT_MESSAGE,
-    TWILIO__OPT_OUT,
-)
+from twilio_service.constant import SURVEY__OPT_OUT_RESPONSE, TWILIO__OPT_OUT
 from twilio_service.logic.generate_survey_response import GenerateSurveyResponse
 
 
@@ -30,7 +27,7 @@ class TwilioWebhook(APIView):
                 user_profile.active = False
                 user_profile.save()
 
-                response = SURVEY__OPT_OUT_MESSAGE
+                response = SURVEY__OPT_OUT_RESPONSE
                 del request.session["survey_step"]
 
             else:
