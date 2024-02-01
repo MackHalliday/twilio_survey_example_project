@@ -10,56 +10,45 @@ from twilio_service.constant import (
 
 class GenerateSurveyResponse:
 
-    def get_reponse(self, request, user, user_message):
+    def get_reponse(self, request, user, user_response):
 
-        user_current_survey = (
-            SurveyUser.objects.filter(user=user, completed=False)
-            .order_by("sent_at")
-            .first()
-        )
+        user_current_survey = SurveyUser.get_(user)
 
         if user_current_survey is None:
-            response = SURVEY__NO_SURVEY_AVAILABLE_RESPONSE
+            twilio_response = SURVEY__NO_SURVEY_AVAILABLE_RESPONSE
 
         else:
             survey_step = request.session.get("survey_step", None)
 
             if survey_step is None:
-                response = SURVEY__CONFIRM_START_RESPONSE
+                twilio_response = SURVEY__CONFIRM_START_RESPONSE
                 request.session["survey_step"] = 0
 
             elif (
-                survey_step == 0 and user_message.lower() != SURVEY__USER_CONFIRM_SURVEY
+                survey_step == 0 and user_response.lower() != SURVEY__USER_CONFIRM_SURVEY
             ):
-                response = SURVEY__CONFIRM_DO_NOT_SEND_RESPONSE
+                twilio_response = SURVEY__CONFIRM_DO_NOT_SEND_RESPONSE
                 del request.session["survey_step"]
 
             else:
-                questions = Question.objects.filter(
-                    survey_id=user_current_survey.id
-                ).order_by("order")
-
+                questions = Question.get_questions_by_survey_qs(user_current_survey)
                 total_questions = len(questions)
 
                 if survey_step > 0:
-                    last_answered_question = questions[survey_step - 1]
+                    previous_question = questions[survey_step - 1]
 
-                    UserResponse.objects.create(
-                        respondent=user,
-                        question=last_answered_question,
-                        response=user_message,
-                    ).save()
+                    UserResponse.save_user_response(user, previous_question, user_response)
 
                 if survey_step < total_questions:
                     next_question = questions[survey_step].text
-                    response = f"({survey_step + 1}/{total_questions}) {next_question}"
+                    twilio_response  = f"({survey_step + 1}/{total_questions}) {next_question}"
 
                     request.session["survey_step"] += 1
                 else:
                     user_current_survey.completed = True
                     user_current_survey.save()
 
-                    response = SURVEY__COMPLETE_RESPONSE
+                    twilio_response = SURVEY__COMPLETE_RESPONSE
                     del request.session["survey_step"]
 
-        return response
+        return twilio_response

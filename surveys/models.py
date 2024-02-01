@@ -17,9 +17,12 @@ class SurveyUser(models.Model):
     completed = models.BooleanField(default=False)
     sent_at = models.DateTimeField(null=True, blank=True)
 
+    @classmethod
+    def get_current_survey_for_user(cls, user):
+        return cls.objects.filter(user=user, completed=False).order_by("sent_at")
+
     class Meta:
         unique_together = ("user", "survey")
-
 
 class Question(models.Model):
     id = models.AutoField(primary_key=True)
@@ -30,22 +33,18 @@ class Question(models.Model):
     text = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    @classmethod
+    def get_questions_by_survey_qs(cls, survey_id):
+        return cls.objects.filter(survey_id=survey_id).order_by("order")
+
     def set_unique_order(self):
-        max_order = self.get_questions_by_survey_id_qs(self.survey_id).aggregate(
-            models.Max("order")
-        )["order__max"]
-        if max_order is None:
-            self.order = 1
-        else:
-            self.order = max_order + 1
+        max_order = self.get_questions_by_survey_qs(self.survey)[-1].order
+        self.order = 1 if None else max_order + 1
 
     def save(self, *args, **kwargs):
         if not self.order:
             self.set_unique_order()
         super().save(*args, **kwargs)
-
-    def get_questions_by_survey_id_qs(self, survey_id):
-        return Question.objects.filter(survey=survey_id)
 
     class Meta:
         unique_together = ("survey", "order")
@@ -59,3 +58,7 @@ class UserResponse(models.Model):
     respondent = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     response = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    @classmethod
+    def save_user_response(cls, respondent, question, response):
+        return cls.objects.create(respondent=respondent, question=question, response=response)
