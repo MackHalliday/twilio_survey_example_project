@@ -7,14 +7,20 @@ from rest_framework.views import APIView
 from twilio.twiml.messaging_response import MessagingResponse
 
 from accounts.models import UserProfile
-from twilio_service.constant import SURVEY__PREVIOUSLY_SUBSCRIBED, SURVEY__OPT_IN_RESPONSE, SURVEY__OPT_OUT_RESPONSE, SURVEY__PREVIOUSLY_SUBSCRIBED, TWILIO__OPT_OUT, TWILIO__UNKNOWN_USER
+from twilio_service.constant import (
+    SURVEY__OPT_IN_RESPONSE,
+    SURVEY__OPT_OUT_RESPONSE,
+    SURVEY__PREVIOUSLY_SUBSCRIBED,
+    TWILIO__OPT_OUT,
+    TWILIO__UNKNOWN_USER,
+)
 from twilio_service.logic.generate_survey_response import GenerateSurveyResponse
 
 
 class TwilioWebhook(APIView):
     def post(self, request, *args, **kwargs):
         try:
-            #TODO - move permission and subscription logic to own file
+            # TODO - move permission and subscription logic to own file
             twilio_data = parse_qs(request.body.decode("utf-8"))
 
             phone_number = " ".join(twilio_data.get("From", []))
@@ -22,13 +28,13 @@ class TwilioWebhook(APIView):
 
             user_profile = UserProfile.objects.get(phone_number=phone_number)
 
-            if not user_profile: 
+            if not user_profile:
                 response = TWILIO__UNKNOWN_USER
 
-            else: 
+            else:
                 user = user_profile.user
 
-                if not user_profile.active: 
+                if not user_profile.active:
                     response = SURVEY__PREVIOUSLY_SUBSCRIBED
 
                 elif user_message.lower() == TWILIO__OPT_OUT:
