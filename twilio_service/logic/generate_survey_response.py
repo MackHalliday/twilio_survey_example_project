@@ -52,6 +52,7 @@ class GenerateSurveyResponse:
                     )
 
                     request.session["survey_step"] += 1
+                    
                 else:
                     survey.completed = True
                     survey.save()
