@@ -4,7 +4,7 @@ from django.urls import reverse
 from twilio.twiml.messaging_response import MessagingResponse
 
 from accounts.models import UserProfile
-from surveys.models import Question, Survey, UserSurveySubscription, UserResponse
+from surveys.models import Question, Survey, UserResponse, UserSurveySubscription
 from twilio_service.constant import (
     SURVEY__COMPLETE_RESPONSE,
     SURVEY__CONFIRM_DO_NOT_SEND_RESPONSE,
@@ -36,7 +36,7 @@ class TwilioWebhookTestCase(TestCase):
             text="Question 3?", survey=self.survey, order=3
         )
 
-        self.survey_user = UserSurveySubscription.objects.create(
+        self.survey_subscription = UserSurveySubscription.objects.create(
             survey=self.survey, user=self.user, completed=False
         )
 
@@ -44,7 +44,7 @@ class TwilioWebhookTestCase(TestCase):
         self.webhook_survey_url = reverse("webhook-survey")
         self.content_type = "application/xml"
 
-    def test_user_can_opt_in(self):
+    def test_user_opts_in(self):
 
         xml = f"From=%2B123456789&Body=Hi!"
 
@@ -57,9 +57,9 @@ class TwilioWebhookTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn(SURVEY__CONFIRM_START_RESPONSE, str(response.content))
 
-    def test_no_available_surveys(self):
-        self.survey_user.completed = True
-        self.survey_user.save()
+    def test_user_has_no_available_surveys(self):
+        self.survey_subscription.completed = True
+        self.survey_subscription.save()
 
         session = self.client.session
         session["survey_step"] = None
@@ -76,7 +76,7 @@ class TwilioWebhookTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn(SURVEY__NO_SURVEY_AVAILABLE_RESPONSE, str(response.content))
 
-    def test_start_survey(self):
+    def test_user_starts_survey(self):
 
         session = self.client.session
         session["survey_step"] = 0
@@ -93,7 +93,7 @@ class TwilioWebhookTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn(self.question_1.text, str(response.content))
 
-    def test_no_survey_sent(self):
+    def test_user_does_not_take_survey(self):
 
         session = self.client.session
         session["survey_step"] = 0
@@ -110,15 +110,12 @@ class TwilioWebhookTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn(SURVEY__CONFIRM_DO_NOT_SEND_RESPONSE, str(response.content))
 
-    def test_survey_complete(self):
+    def test_user_takes_survey(self):
         session = self.client.session
-        session["survey_step"] = 3
+        session["survey_step"] = 1
         session.save()
 
-        twilio_response = MessagingResponse()
-        twilio_response.message("Survey complete.")
-
-        xml = "From=%2B123456789&Body=Response to last question asked."
+        xml = "From=%2B123456789&Body=User responses to first questions."
 
         response = self.client.post(
             self.webhook_survey_url,
@@ -126,11 +123,58 @@ class TwilioWebhookTestCase(TestCase):
             content_type=self.content_type,
         )
 
+        question_1_response = UserResponse.objects.filter(
+            respondent=self.user, question=self.question_1
+        ).first()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(self.question_2.text, str(response.content))
+        self.assertEqual(
+            question_1_response.response, "User responses to first questions."
+        )
+
+        xml = "From=%2B123456789&Body=User responses to second questions."
+
+        response = self.client.post(
+            self.webhook_survey_url,
+            data=xml,
+            content_type=self.content_type,
+        )
+
+        question_2_response = UserResponse.objects.filter(
+            respondent=self.user, question=self.question_2
+        ).first()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(self.question_3.text, str(response.content))
+        self.assertEqual(
+            question_2_response.response, "User responses to second questions."
+        )
+
+    def test_user_completes_survey(self):
+        session = self.client.session
+        session["survey_step"] = 3
+        session.save()
+
+        xml = "From=%2B123456789&Body=User responses to third questions."
+
+        response = self.client.post(
+            self.webhook_survey_url,
+            data=xml,
+            content_type=self.content_type,
+        )
+
+        saved_user_response = UserResponse.objects.filter(
+            respondent=self.user, question=self.question_3
+        ).first()
+
         self.assertEqual(response.status_code, 200)
         self.assertIn(SURVEY__COMPLETE_RESPONSE, str(response.content))
-        self.assertEqual(UserResponse.objects.count(), 1)
+        self.assertEqual(
+            saved_user_response.response, "User responses to third questions."
+        )
 
-    def test_user_can_opt_out(self):
+    def test_user_opts_out(self):
         session = self.client.session
         session["survey_step"] = 0
         session.save()
@@ -143,5 +187,8 @@ class TwilioWebhookTestCase(TestCase):
             content_type=self.content_type,
         )
 
+        self.user_profile.refresh_from_db()
+
         self.assertEqual(response.status_code, 200)
         self.assertIn(SURVEY__OPT_OUT_RESPONSE, str(response.content))
+        self.assertEqual(self.user_profile.active, False)
