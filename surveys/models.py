@@ -18,7 +18,7 @@ class UserSurveySubscription(models.Model):
     sent_at = models.DateTimeField(null=True, blank=True)
 
     @classmethod
-    def get_current_survey_for_user(cls, user):
+    def get_current_survey_subscription(cls, user):
         return cls.objects.filter(user=user, completed=False).order_by("sent_at")
 
     class Meta:

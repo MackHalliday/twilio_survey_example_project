@@ -12,12 +12,13 @@ class GenerateSurveyResponse:
 
     def get_reponse(self, request, user, user_response):
 
-        user_current_survey = UserSurveySubscription.get_current_survey_for_user(user)
+        current_subscription = UserSurveySubscription.get_current_survey_subscription(user)
 
-        if user_current_survey is None:
+        if not current_subscription:
             twilio_response = SURVEY__NO_SURVEY_AVAILABLE_RESPONSE
 
         else:
+            survey = current_subscription[0].survey
             survey_step = request.session.get("survey_step", None)
 
             if survey_step is None:
@@ -31,7 +32,7 @@ class GenerateSurveyResponse:
                 del request.session["survey_step"]
 
             else:
-                questions = Question.get_questions_by_survey_qs(user_current_survey)
+                questions = Question.get_questions_by_survey_qs(survey)
                 total_questions = len(questions)
 
                 if survey_step > 0:
@@ -45,8 +46,8 @@ class GenerateSurveyResponse:
 
                     request.session["survey_step"] += 1
                 else:
-                    user_current_survey.completed = True
-                    user_current_survey.save()
+                    survey.completed = True
+                    survey.save()
 
                     twilio_response = SURVEY__COMPLETE_RESPONSE
                     del request.session["survey_step"]
