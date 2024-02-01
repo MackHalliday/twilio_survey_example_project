@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from twilio.twiml.messaging_response import MessagingResponse
 
 from accounts.models import UserProfile
-from twilio_service.constant import SURVEY__CURRENTLY_SUBSCRIBED, SURVEY__OPT_IN_RESPONSE, SURVEY__OPT_OUT_RESPONSE, SURVEY__PREVIOUSLY_SUBSCRIBED, TWILIO__OPT_OUT, TWILIO__UNKNOWN_USER
+from twilio_service.constant import SURVEY__PREVIOUSLY_SUBSCRIBED, SURVEY__OPT_IN_RESPONSE, SURVEY__OPT_OUT_RESPONSE, SURVEY__PREVIOUSLY_SUBSCRIBED, TWILIO__OPT_OUT, TWILIO__UNKNOWN_USER
 from twilio_service.logic.generate_survey_response import GenerateSurveyResponse
 
 
