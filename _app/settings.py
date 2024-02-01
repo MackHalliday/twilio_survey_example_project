@@ -30,15 +30,15 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["a287-96-239-116-96.ngrok-free.app", "localhost", "127.0.0.1"]
+NGROK_HOST = 'bc39-96-239-116-96.ngrok-free.app'
+NGROK_SITE = f"https://{NGROK_HOST}"
 
-ngrok_site = f"https://a287-96-239-116-96.ngrok-free.app"
+ALLOWED_HOSTS = [NGROK_HOST, "localhost", "127.0.0.1"]
 
-CORS_ALLOWED_ORIGINS = [ngrok_site]
+CORS_ALLOWED_ORIGINS = [NGROK_SITE]
 
-CSRF_TRUSTED_ORIGINS = [ngrok_site]
+CSRF_TRUSTED_ORIGINS = [NGROK_SITE]
 
-# Application definition
 
 INSTALLED_APPS = [
     "django.contrib.admin",
