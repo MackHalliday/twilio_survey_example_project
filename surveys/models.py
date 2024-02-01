@@ -24,6 +24,7 @@ class UserSurveySubscription(models.Model):
     class Meta:
         unique_together = ("user", "survey")
 
+
 class Question(models.Model):
     id = models.AutoField(primary_key=True)
     survey = models.ForeignKey(
@@ -61,4 +62,6 @@ class UserResponse(models.Model):
 
     @classmethod
     def save_user_response(cls, respondent, question, response):
-        return cls.objects.create(respondent=respondent, question=question, response=response)
+        return cls.objects.create(
+            respondent=respondent, question=question, response=response
+        )

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Question, Survey, UserSurveySubscription, UserResponse
+from .models import Question, Survey, UserResponse, UserSurveySubscription
 
 admin.site.register(Survey)
 admin.site.register(UserSurveySubscription)
