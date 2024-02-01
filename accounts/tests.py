@@ -5,7 +5,7 @@ from accounts.models import UserProfile
 
 # from django.urls import reverse
 
-# from surveys.models import Question, Survey, SurveyUser
+# from surveys.models import Question, Survey, UserSurveySubscription
 # from twilio_service.constant import TWILIO__OPT_OUT
 
 

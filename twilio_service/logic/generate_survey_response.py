@@ -1,4 +1,4 @@
-from surveys.models import Question, SurveyUser, UserResponse
+from surveys.models import Question, UserSurveySubscription, UserResponse
 from twilio_service.constant import (
     SURVEY__COMPLETE_RESPONSE,
     SURVEY__CONFIRM_DO_NOT_SEND_RESPONSE,
@@ -12,7 +12,7 @@ class GenerateSurveyResponse:
 
     def get_reponse(self, request, user, user_response):
 
-        user_current_survey = SurveyUser.get_(user)
+        user_current_survey = UserSurveySubscription.get_current_survey_for_user(user)
 
         if user_current_survey is None:
             twilio_response = SURVEY__NO_SURVEY_AVAILABLE_RESPONSE

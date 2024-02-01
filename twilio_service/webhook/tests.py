@@ -4,7 +4,7 @@ from django.urls import reverse
 from twilio.twiml.messaging_response import MessagingResponse
 
 from accounts.models import UserProfile
-from surveys.models import Question, Survey, SurveyUser, UserResponse
+from surveys.models import Question, Survey, UserSurveySubscription, UserResponse
 from twilio_service.constant import (
     SURVEY__COMPLETE_RESPONSE,
     SURVEY__CONFIRM_DO_NOT_SEND_RESPONSE,
@@ -36,7 +36,7 @@ class TwilioWebhookTestCase(TestCase):
             text="Question 3?", survey=self.survey, order=3
         )
 
-        self.survey_user = SurveyUser.objects.create(
+        self.survey_user = UserSurveySubscription.objects.create(
             survey=self.survey, user=self.user, completed=False
         )
 

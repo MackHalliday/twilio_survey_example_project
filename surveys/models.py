@@ -10,7 +10,7 @@ class Survey(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 
-class SurveyUser(models.Model):
+class UserSurveySubscription(models.Model):
     id = models.AutoField(primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     survey = models.ForeignKey(Survey, on_delete=models.CASCADE)
