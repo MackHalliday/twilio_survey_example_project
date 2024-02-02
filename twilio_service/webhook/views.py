@@ -14,7 +14,7 @@ from twilio_service.constant import (
     TWILIO__OPT_OUT,
     TWILIO__UNKNOWN_USER,
 )
-from twilio_service.logic.generate_survey_response import GenerateSurveyResponse
+from twilio_service.services.survey_response_service import SurveyResponseService
 
 
 class TwilioWebhook(APIView):
@@ -34,26 +34,8 @@ class TwilioWebhook(APIView):
             else:
                 user = user_profile.user
 
-                if not user_profile.active:
-                    response = SURVEY__PREVIOUSLY_SUBSCRIBED
-
-                elif user_message.lower() == TWILIO__OPT_OUT:
-                    user_profile.active = False
-                    user_profile.save()
-
-                    response = SURVEY__OPT_OUT_RESPONSE
-                    request.session.pop("survey_step", None)
-
-                elif user_message.lower() == TWILIO__OPT_OUT:
-                    user_profile.active = True
-                    user_profile.save()
-
-                    response = SURVEY__OPT_IN_RESPONSE
-
-                else:
-                    response = GenerateSurveyResponse.get_reponse(
-                        self, request, user, user_message
-                    )
+               
+                response = SurveyResponseService(request, user, user_message).get_reponse()
 
             twilio_response = MessagingResponse()
             twilio_response.message(response)
