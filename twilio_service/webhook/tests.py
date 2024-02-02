@@ -21,7 +21,7 @@ class TwilioWebhookTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create(username="testuser", password="testpassword")
         self.user_profile = UserProfile.objects.create(
-            user=self.user, phone_number="+123456789"
+            user=self.user, phone_number="+123456789", active=True
         )
         self.user_phone_number = self.user_profile.phone_number
 
